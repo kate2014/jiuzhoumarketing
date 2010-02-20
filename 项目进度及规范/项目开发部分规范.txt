@@ -1,0 +1,16 @@
+【项目开发部分规范】
+1.struts.xml的配置:
+1)用<package>来区分开各个功能模块！
+2)关于各<action>的配置:
+--- 每个action对应一个查询方法名！
+[1]add - 添加单个
+[2]del - 删除单个或多个
+[3]edit - 针对修改前的查询
+[4]edit_submit - 修改提交
+[5]detail - 查询单个明细
+[6]show - 其他方式查询
+3)关于各<action>中<result>的配置:
+[1]input - 验证失败页
+[2]success - 操作成功页
+[3]error - 操作失败页
+
