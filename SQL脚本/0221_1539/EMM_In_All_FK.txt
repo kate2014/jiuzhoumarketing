@@ -1,0 +1,188 @@
+#################################################
+###Creae FK - 01_User_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)Department - FK
+alter table `Department` add constraint `fk_Department_upGradeDeptId_Department_deptId` foreign key (`upGradeDeptId`) references `Department` (`deptId`);
+alter table `Department` add constraint `fk_Department_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###2)User - FK
+alter table `User` add constraint `fk_User_deptId_Department_deptId` foreign key (`deptId`) references `Department` (`deptId`);
+alter table `User` add constraint `fk_User_userStatusId_UserStatus_userStatusId` foreign key (`userStatusId`) references `UserStatus` (`userStatusId`);
+
+###3)Role - FK
+alter table `Role` add constraint `fk_Role_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###4)Authority - FK
+alter table `Authority` add constraint `fk_Authority_authorityModuleCode_AuthorityModule_moduleCode` foreign key (`authorityModuleCode`) references `AuthorityModule` (`moduleCode`);
+
+###5)AuthorityModule - FK
+alter table `AuthorityModule` add constraint `fk_AuthorityModule_upGradeModuleCode_AuthorityModule_moduleCode` foreign key (`upGradeModuleCode`) references `AuthorityModule` (`moduleCode`);
+
+###7)UserRoleRelation - FK
+alter table `UserRoleRelation` add constraint `fk_UserRoleRelation_userCode_User_userCode` foreign key (`userCode`) references `User` (`userCode`);
+alter table `UserRoleRelation` add constraint `fk_UserRoleRelation_roleId_User_roleId` foreign key (`roleId`) references `Role` (`roleId`);
+
+###8)RoleAuthorityRelation - FK
+alter table `RoleAuthorityRelation` add constraint `fk_RoleAuthorityRelation_roleId_Role_roleId` foreign key (`roleId`) references `Role` (`roleId`);
+alter table `RoleAuthorityRelation` add constraint `fk_RoleAuthorityRelation_authorityCode_Authority_authorityCode` foreign key (`authorityCode`) references `Authority` (`authorityCode`);
+
+
+
+#################################################
+###Creae FK - 02_Log_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)DailyLog - FK
+alter table `DailyLog` add constraint `fk_DailyLog_userCode_User_userCode` foreign key (`userCode`) references `User` (`userCode`);
+alter table `DailyLog` add constraint `fk_DailyLog_serviceCode_ServiceInfo_serviceCode` foreign key (`serviceCode`) references `ServiceInfo` (`serviceCode`);
+
+
+
+#################################################
+###Creae FK - 03_ContractTemplate_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)ContractTemplate - FK
+alter table `ContractTemplate` add constraint `fk_ContractTemplate_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+
+
+#################################################
+###Creae FK - 04_Brand_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)Brand - FK
+alter table `Brand` add constraint `fk_Brand_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###2)BrandCert - FK
+alter table `BrandCert` add constraint `fk_BrandCert_bcTypeId_BrandCertType_bcTypeId` foreign key (`bcTypeId`) references `BrandCertType` (`bcTypeId`);
+alter table `BrandCert` add constraint `fk_BrandCert_brandId_Brand_brandId` foreign key (`brandId`) references `Brand` (`brandId`);
+alter table `BrandCert` add constraint `fk_BrandCert_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###3)BrandCertType - FK
+alter table `BrandCertType` add constraint `fk_BrandCertType_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+
+
+#################################################
+###Creae FK - 05_GoodsCategory_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)GoodsCategory - FK
+alter table `GoodsCategory` add constraint `fk_GoodsCategory_upGradeGcCode_GoodsCategory_gcCode` foreign key (`upGradeGcCode`) references `GoodsCategory` (`gcCode`);
+alter table `GoodsCategory` add constraint `fk_GoodsCategory_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+ 
+
+#################################################
+###Creae Table - 06_Message_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)Message - FK
+alter table `Message` add constraint `fk_Message_sendUserCode_User_userCode` foreign key (`sendUserCode`) references `User` (`userCode`);
+alter table `Message` add constraint `fk_Message_receiveUserCode_User_userCode` foreign key (`receiveUserCode`) references `User` (`userCode`);
+alter table `Message` add constraint `fk_Message_messageStatusId_MessageStatus_messageStatusId` foreign key (`messageStatusId`) references `MessageStatus` (`messageStatusId`);
+
+
+
+#################################################
+###Creae FK - 07_Merchant_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)Merchant - FK
+alter table `Merchant` add constraint `fk_Merchant_mainCategoryCode_GoodsCategory_gcCode` foreign key (`mainCategoryCode`) references `GoodsCategory` (`gcCode`);
+alter table `Merchant` add constraint `fk_Merchant_agentLevelCode_MerchantAgentLevel_levelCode` foreign key (`agentLevelCode`) references `MerchantAgentLevel` (`levelCode`);
+alter table `Merchant` add constraint `fk_Merchant_businessNatureCode_BusinessNature_natureCode` foreign key (`businessNatureCode`) references `BusinessNature` (`natureCode`);
+alter table `Merchant` add constraint `fk_Merchant_employeeSizeTypeCode_EmployeeSizeType_typeCode` foreign key (`employeeSizeTypeCode`) references `EmployeeSizeType` (`typeCode`);
+alter table `Merchant` add constraint `fk_Merchant_merchantStatusId_MerchantStatus_statusId` foreign key (`merchantStatusId`) references `MerchantStatus` (`statusId`);
+alter table `Merchant` add constraint `fk_Merchant_securityApproveStatusId_MerchantStatus_statusId` foreign key (`securityApproveStatusId`) references `MerchantStatus` (`statusId`);
+alter table `Merchant` add constraint `fk_Merchant_propertyApproveStatusId_MerchantStatus_statusId` foreign key (`propertyApproveStatusId`) references `MerchantStatus` (`statusId`);
+alter table `Merchant` add constraint `fk_Merchant_decorationApproveStatusId_MerchantStatus_statusId` foreign key (`decorationApproveStatusId`) references `MerchantStatus` (`statusId`);
+alter table `Merchant` add constraint `fk_Merchant_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###2)MerchantBrandRelation - FK
+alter table `MerchantBrandRelation` add constraint `fk_MerchantBrandRelation_merchantId_Merchant_merchantId` foreign key (`merchantId`) references `Merchant` (`merchantId`);
+alter table `MerchantBrandRelation` add constraint `fk_MerchantBrandRelation_brandId_Brand_brandId` foreign key (`brandId`) references `Brand` (`brandId`);
+
+###3)MerchantCert - FK
+alter table `MerchantCert` add constraint `fk_MerchantCert_merchantId_Merchant_merchantId` foreign key (`merchantId`) references `Merchant` (`merchantId`);
+alter table `MerchantCert` add constraint `fk_MerchantCert_merchantCertTypeId_MerchantCertType_typeId` foreign key (`merchantCertTypeId`) references `MerchantCertType` (`typeId`);
+alter table `MerchantCert` add constraint `fk_MerchantCert_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###4)MerchantCertType - FK
+alter table `MerchantCertType` add constraint `fk_MerchantCertType_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+
+
+#################################################
+###Creae FK - 08_Assistant_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)Assistant - FK
+alter table `Assistant` add constraint `fk_Assistant_merchantId_Merchant_merchantId` foreign key (`merchantId`) references `Merchant` (`merchantId`);
+alter table `Assistant` add constraint `fk_Assistant_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###2)AssistantDailyPatrolRecord - FK
+alter table `AssistantDailyPatrolRecord` add constraint `fk_AssistantDailyPatrolRecord_assistantId_Assistant_assistantId` foreign key (`assistantId`) references `Assistant` (`assistantId`);
+alter table `AssistantDailyPatrolRecord` add constraint `fk_AssistantDailyPatrolRecord_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+
+
+#################################################
+###Creae FK - 09_Resource_Module_FK
+#################################################
+
+use `EbizMarketManager_Final`;  
+
+###1)LayoutFunction - FK
+alter table `LayoutFunction` add constraint `fk_LayoutFunction_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###2)Layout - FK
+alter table `Layout` add constraint `fk_Layout_upGradeLayoutId_Layout_layoutId` foreign key (`upGradeLayoutId`) references `Layout` (`layoutId`);
+alter table `Layout` add constraint `fk_Layout_lfTypeId_LayoutFunction_lfTypeId` foreign key (`lfTypeId`) references `LayoutFunction` (`lfTypeId`);
+alter table `Layout` add constraint `fk_Layout_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###3)Booth - FK
+alter table `Booth` add constraint `fk_Booth_layoutId_Layout_layoutId` foreign key (`layoutId`) references `Layout` (`layoutId`);
+alter table `Booth` add constraint `fk_Booth_merchantId_Merchant_merchantId` foreign key (`merchantId`) references `Merchant` (`merchantId`);
+alter table `Booth` add constraint `fk_Booth_statusId_ResourceStatus_statusId` foreign key (`statusId`) references `ResourceStatus` (`statusId`);
+alter table `Booth` add constraint `fk_Booth_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###5)BoothStandardFee - FK
+alter table `Booth` add constraint `fk_BoothStandardFee_layoutId_Layout_layoutId` foreign key (`layoutId`) references `Layout` (`layoutId`);
+alter table `Booth` add constraint `fk_BoothStandardFee_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###6)BoothRealFee - FK
+alter table `BoothRealFee` add constraint `fk_BoothRealFee_boothId_Booth_boothId` foreign key (`boothId`) references `Booth` (`boothId`);
+alter table `BoothRealFee` add constraint `fk_BoothRealFee_bsfItemId_BoothStandardFee_bsfItemId` foreign key (`bsfItemId`) references `BoothStandardFee` (`bsfItemId`);
+alter table `BoothRealFee` add constraint `fk_BoothRealFee_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###7)Resource - FK
+alter table `Resource` add constraint `fk_Resource_resourceTypeId_ResourceType_resourceTypeId` foreign key (`resourceTypeId`) references `ResourceType` (`resourceTypeId`);
+alter table `Resource` add constraint `fk_Resource_merchantId_Merchant_merchantId` foreign key (`merchantId`) references `Merchant` (`merchantId`);
+alter table `Resource` add constraint `fk_Resource_resourceStatusId_ResourceStatus_statusId` foreign key (`resourceStatusId`) references `ResourceStatus` (`statusId`);
+alter table `Resource` add constraint `fk_Resource_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+###8)ResourceType - FK
+alter table `ResourceType` add constraint `fk_ResourceType_lastModifyUserCode_User_userCode` foreign key (`lastModifyUserCode`) references `User` (`userCode`);
+
+
+
+
