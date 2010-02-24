@@ -1,6 +1,6 @@
 1.ÎÄµµSVN£º
 --- https://jiuzhoumarketing.googlecode.com/svn/trunk 
-name:		sallivanzc@gmail.com
+name:	sallivanzc@gmail.com
 password:	Ka6st7Zx2sV3
 
 2.´úÂëSVN
