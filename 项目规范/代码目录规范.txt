@@ -1,0 +1,14 @@
+【代码目录规范】
+1.针对各种查询的检索条件实体Bean：
+1)针对某个Action中的所有查询操作，如果其查询条件涉及内容比较少或不复杂，则可以将这些查询条件全部封装为一个实体Bean，专供对应Action使用。
+2)当某Action中包含的查询条件过多或复杂时，可以用如下两个方法之一酌情解决：
+[1]分做两组Action\Search来处理。
+[2]为该XyzAction定义多个检索条件实体Bean，其命名"XyzSearchFor +　表意名词"!
+
+2)目录：
+[1]XyzAction：com.ebiz.marketmanager.action.XyzAction
+[2]XyzSearch：com.ebiz.marketmanager.action.search.XyzSearch
+
+
+
+
