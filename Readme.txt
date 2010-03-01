@@ -17,3 +17,8 @@ password:	Ka6st7Zx2sV3
 [2]外网：
 --- https://218.68.82.23:8443/svn/ebizMarketManager（作废）
 --- https://218.68.79.176:8443/svn/ebizMarketManager（目前可用！）
+
+
+
+
+
