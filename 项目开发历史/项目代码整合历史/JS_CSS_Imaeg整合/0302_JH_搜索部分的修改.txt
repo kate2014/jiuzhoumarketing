@@ -1,0 +1,22 @@
+1.*_show.jsp中添加一个JavaScript方法
+  具体内容参加user_show.jsp中
+	window.onload=function(){
+	……;
+	}
+
+2.引入一个js文件，js/search.js
+3.css文件ajaxtookit.css 变更为search.jss
+4.*_show.jsp中“搜索/高级搜索”选项，以及下面显示输入内容的部分
+  一些div、form、table的class和id属性，有变更，具体参照user_show.jsp的46行至147行
+
+5.为了实现检索条件回写到页面时，简单检索和高级检索同名部分，不会同时显示检索条件
+  简单检索使用的javabean有变更，如用户部分高级搜索的bean叫userSearch，简单搜索的bean叫userFind
+  相应的变更做在*_show.jsp和*Action.java中
+
+6.1为了实现根据检索的类型（一般/高级）,在结果的页面显示不同的“检索条件”部分
+   user_show.jsp在46行中加入了一个input，用于接收检索的类型
+   在步骤1的js方法中，会根据这个input的值，显示不同的“检索条件”部分
+   仅当该input的值为advancedSearch时，会有显示高级检索部分，其他情况，均显示简单检索
+
+6.2 user_show.jsp的90行，添加了一个bean的属性，用于提交检索类型
+   仅高级检索时提交，简单检索部分不设定此bean属性，原因参照6.1

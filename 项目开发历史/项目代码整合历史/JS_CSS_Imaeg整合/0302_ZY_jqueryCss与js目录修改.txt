@@ -1,0 +1,12 @@
+1. 原webRoot/css文件夹,更名为jquery_css,配置到style文件夹下。
+2. webRoot/js目录下更新jquery.js文件,需要在show.jsp中引入
+例如：
+	<!------------------------- 改动部分----------------------------------------------------------------- -->	
+		<link rel="stylesheet" href="style/jquery_css/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+		<script language="javascript" type="text/javascript" src="js/datetime.js"></script>
+	
+		<script src="js/jquery-latest.js"></script>
+		<script src="js/jquery.tablesorter.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+	<!------------------------- 改动部分----------------------------------------------------------------- -->	
+详细参见role_show.jsp
