@@ -1,0 +1,1466 @@
+#################################################
+#Creae Database - 00_Emm_Database
+#################################################
+
+drop database if exists `EbizMarketManager_0303`;
+
+create database `EbizMarketManager_0303`
+character set 'utf8' 
+collate 'utf8_general_ci';
+
+ 
+ 
+#################################################
+###Creae Table - 01_Resource_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Layout_Function
+drop table if exists `Layout_Function`;
+create table `Layout_Function`
+(
+	`lfId` int(11) not null auto_increment,
+	#`lfCode` varchar(20) default null,
+	`lfName` nvarchar(20) default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,	#FK	
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`lfId`),
+	#unique (`lfCode`),
+	key `idx_LayoutFunction_lastModifyUserCode` (`lastModifyUserCode`)	
+);
+
+###1)Layout_Function - FK
+#[1]FK: lastModifyUserCode
+
+#------------------------------
+
+###2)Layout
+drop table if exists `Layout`;
+create table `Layout`
+(
+	`layoutId` int(11) not null auto_increment,
+	`layoutCode` varchar(20) default null,
+	`layoutName` nvarchar(20) default null,
+	`layoutGradeNo` int(11) not null,
+	`upGradeLayoutId` int(11) default null, 		#FK
+	`lfId` int(11) not null, 										#FK
+	`layoutArea` double default null,
+	`standardBoothArea` double default null,
+	`position` nvarchar(255) default null,
+	`remarks` text default null,	
+	`lastModifyUserCode` varchar(20) not null,	#FK 
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`layoutId`),
+	#unique (`layoutCode`),
+	key `idx_Layout_upGradeLayoutId` (`upGradeLayoutId`),			
+	key `idx_Layout_lfId` (`lfId`),			
+	key `idx_Layout_lastModifyUserCode` (`lastModifyUserCode`)			
+);
+
+###2)Layout - FK
+#[1]FK: upGradeLayoutId
+#[2]FK: lfId
+#[3]FK: lastModifyUserCode
+
+#------------------------------
+
+###3)Booth
+drop table if exists `Booth`;
+create table `Booth`
+(
+	`boothId` int(11) not null auto_increment,
+	`boothCode` varchar(20) default null,
+	`boothName` nvarchar(20) default null,
+	`layoutId` int(11) not null, 								#FK
+	`boothArea` double default null,
+	`position` nvarchar(255) default null,
+	`merchantId` int(11) default null, 					#FK
+	#`contractId` int(11) default null, 				
+	`contractCode` varchar(20) default null, 		#FK
+	`boothStatusId` int(11) not null, 					#FK
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, 	#FK	
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`boothId`),
+	#unique (boothCode),
+	key `idx_Booth_layoutId` (`layoutId`),	
+	key `idx_Booth_merchantId` (`merchantId`),	
+	key `idx_Booth_contractCode` (`contractCode`),	
+	key `idx_Booth_boothStatusId` (`boothStatusId`),	
+	key `idx_Booth_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+###3)Booth - FK
+#[1]FK: layoutId
+#[2]FK: merchantId
+#[3]FK: contractCode --- 遗漏！
+#[4]FK: boothStatusId
+#[5]FK: lastModifyUserCode
+
+#------------------------------
+
+###4)Resource_Status
+drop table if exists `Resource_Status`;
+create table `Resource_Status`
+(
+	statusId int(11) not null auto_increment,
+	statusName nvarchar(20) not null,
+	primary key(`statusId`)	
+);
+
+#------------------------------
+
+###5)Booth_Standard_Fee
+drop table if exists `Booth_Standard_Fee`;
+create table `Booth_Standard_Fee`
+(
+	`bsfItemId` int(11) not null auto_increment,	
+	`layoutId` int(11) not null, 									#FK
+	`bsfItemName` nvarchar(20) default null,	
+	`bsf` double default null,
+	`rgfpType` nvarchar(20) default null,
+	`lastModifyUserCode` varchar(20) not null, 		#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`bsfItemId`),
+	key `idx_BoothStandardFee_layoutId` (`layoutId`),	
+	key `idx_BoothStandardFee_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+###5)Booth_Standard_Fee - FK
+#[1]FK:layoutId
+#[2]FK:lastModifyUserCode
+
+#------------------------------
+
+###6)Booth_Real_Fee
+#drop table if exists `Booth_Real_Fee`;
+#create table `Booth_Real_Fee`
+#(
+#	`brfItemId` int(11) not null auto_increment,	
+#	`boothId` int(11) not null, 
+#	`bsfItemId` int(11) not null, 
+#	`contractId` int(11) not null, 
+#	`brf` double default null,
+#	`lastModifyUserCode` varchar(20) not null, 
+#	`lastModifyTime` date not null,
+#	`delFlag` char(1) not null default 'N',	
+#	primary key(`brfItemId`),
+#	key `idx_BoothRealFee_boothId` (`boothId`),	
+#	key `idx_BoothRealFee_bsfItemId` (`bsfItemId`),	
+#	key `idx_BoothRealFee_contractId` (`contractId`),	
+#	key `idx_BoothRealFee_lastModifyUserCode` (`lastModifyUserCode`)		
+#);
+#
+####6)BoothRealFee - FK
+##[1]FK:boothId
+##[2]FK:bsfItemId
+##[3]FK:contractId --- 遗漏！
+##[4]FK:lastModifyUserCode
+
+#------------------------------
+
+###7)Resource
+drop table if exists `Resource`;
+create table `Resource`
+(
+	`resourceId` int(11) not null auto_increment,
+	`resourceCode` varchar(20) default null,
+	`resourceName` nvarchar(20) default null,	
+	`resourceTypeId` int(11) not null, 					#FK
+	`position` nvarchar(100) default null,
+	`standardFee` double default null,
+	`realFee` double default null,
+	`merchantId` int(11) default null,       		#FK
+	`resourceStatusId` int(11) not null,				#FK 
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,  #FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`resourceId`),
+	#unique (`resourceCode`),
+	key `idx_Resource_resourceTypeId` (`resourceTypeId`),
+	key `idx_Resource_merchantId` (`merchantId`),
+	key `idx_Resource_resourceStatusId` (`resourceStatusId`),
+	key `idx_Resource_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+###7)Resource - FK
+#[1]FK:resourceTypeId
+#[2]FK:merchantId
+#[3]FK:resourceStatusId
+#[4]FK:lastModifyUserCode
+
+#------------------------------
+
+###8)Resource_Type
+drop table if exists `Resource_Type`;
+create table `Resource_Type`
+(
+	`typeId` int(11) not null auto_increment,
+	`typeName` nvarchar(20) not null,
+	`lastModifyUserCode` varchar(20) not null,   #FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key(`typeId`),
+	key `idx_ResourceType_lastModifyUserCode` (`lastModifyUserCode`)	
+);
+
+###8)ResourceType - FK
+#[1]FK:lastModifyUserCode
+
+
+##########################################
+#[[[Missing FK In All]]]
+#1)Booth
+#[1]contractId
+#2)Booth_Real_Fee(该表已经被去掉！！！)
+#[1]contractId
+#
+##########################################
+
+
+
+#################################################
+###Creae Table - 02_Merchant_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Merchant
+drop table if exists `Merchant`;
+create table `Merchant`
+(	
+	#商户基本信息 
+	`merchantId` int(11) not null auto_increment,
+	`merchantCode` varchar(20) default null,
+	`merchantName` nvarchar(20) default null,
+	`merchantSymbol` varchar(20) default null,
+	#商户联系信息
+	`address` nvarchar(255) default null,	
+	`managerName` nvarchar(20) default null,
+	`mobileTelephone` varchar(50) default null,
+	`telephone` varchar(50) default null,
+	`website` varchar(255) default null,	
+	`email` varchar(50) default null,
+	#商户资质信息
+	`businessNatureCode` varchar(20) default null, 							#FK
+	`mainCategoryCode` varchar(20) default null, 								#FK
+	`mainBrandName` nvarchar(20) default null,									
+	`agentLevelCode` varchar(20) default null,									#FK
+	`registeredCapital` double default null,
+	`employeeSizeTypeCode` varchar(20) default null,						#FK
+	`infoSource` nvarchar(50) default null,	
+	`netBusinessFlag` char(1) default null,
+	`guarantyMoney` double default null,
+	`sincerityMoney` double default null,
+	`businessLicence` varchar(50) default null,
+	`stateTaxRegistrationCode` varchar(50) default null,
+	`taxRegistrationCode` varchar(50) default null,
+	`bank` nvarchar(100) default null,
+	`bankAccount` varchar(50) default null,	 
+	`legalPersonName` nvarchar(20) default null,
+	`legalPersonIdCard` varchar(50) default null,
+	`legalPersonCode` varchar(50) default null,
+	#商户状态信息
+	`merchantStatusId` int(11) not null, 												#FK
+	`securityApproveStatusId` int(11) not null,	 								#FK
+	`propertyApproveStatusId` int(11) not null,	 								#FK
+	`decorationApproveStatusId`	int(11) not null,	 							#FK
+	#其他
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, 									#FK
+	`lastModifyTime` date not null,
+	primary key (`merchantId`),
+	#unique (`merchantCode`),	
+	key `idx_Merchant_mainCategoryCode` (`mainCategoryCode`),
+	key `idx_Merchant_agentLevelCode` (`agentLevelCode`),
+	key `idx_Merchant_businessNatureCode` (`businessNatureCode`),
+	key `idx_Merchant_employeeSizeTypeCode` (`employeeSizeTypeCode`),
+	key `idx_Merchant_merchantStatusId` (`merchantStatusId`),
+	key `idx_Merchant_securityApproveStatusId` (`securityApproveStatusId`),
+	key `idx_Merchant_propertyApproveStatusId` (`propertyApproveStatusId`),
+	key `idx_Merchant_decorationApproveStatusId` (`decorationApproveStatusId`),
+	key `idx_Merchant_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+###1)Merchant
+#[1]FK: mainCategoryCode
+#[2]FK: agentLevelCode
+#[3]FK: businessNatureCode
+#[4]FK: employeeSizeTypeCode
+#[5]FK: merchantStatusId
+#[6]FK: securityApproveStatusId
+#[7]FK: propertyApproveStatusId
+#[8]FK: decorationApproveStatusId
+#[9]FK: lastModifyUserCode
+
+#------------------------------
+
+###2)Rl_Merchant_Brand (N:N)
+drop table if exists `Rl_Merchant_Brand`;
+create table `Rl_Merchant_Brand`
+(
+	`merchantId` int(11) not null, 
+	`brandId` int(11) not null, 
+	primary key (`merchantId`, `brandId`)	
+);
+
+###2)Rl_Merchant_Brand
+#[1]FK: merchantId
+#[2]FK: brandId
+
+#------------------------------
+
+###3)Merchant_Cert (1:N)
+drop table if exists `Merchant_Cert`;
+create table `Merchant_Cert`
+(
+	`mcId` int(11) not null,
+	`merchantId` int(11) default null, 					#FK
+	`mcTypeCode` varchar(20) default null, 			#FK
+	`mcCode` varchar(50) default null,
+	`mcBeginDate` date default null,
+	`mcEndDate` date default null,
+	`mcAwardUnit` nvarchar(50) default null,
+	`lastModifyUserCode` varchar(20) not null, 	#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key (`mcId`),	
+	key `idx_MerchantCert_merchantId` (`merchantId`),
+	key `idx_MerchantCert_merchantCertTypeCode` (`mcTypeCode`),
+	key `idx_MerchantCert_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+###3)Merchant_Cert
+#[1]FK: merchantId
+#[2]FK: mcTypeCode
+#[3]FK: lastModifyUserCode
+
+#------------------------------
+
+###4)Merchant_Cert_Type
+drop table if exists `Merchant_Cert_Type`;
+create table `Merchant_Cert_Type`
+(
+	`typeCode` varchar(20) not null,						#FK
+	`typeName` nvarchar(20) default null, 
+	`lastModifyUserCode` varchar(20) not null, 	
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key (`typeCode`),	
+	#unique (`typeName`),
+	key `idx_MerchantCertType_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+###4)Merchant_Cert_Type
+#[1]FK: lastModifyUserCode 
+
+#------------------------------
+
+###5)Merchant_Status
+drop table if exists `Merchant_Status`;
+create table `Merchant_Status`
+(
+	`statusId` int(11) not null auto_increment,
+	`statusName` nvarchar(20) not null,
+	primary key (`statusId`)	
+);
+
+#------------------------------
+
+###6)Business_Nature
+drop table if exists `Business_Nature`;
+create table `Business_Nature`
+(
+	`natureCode` varchar(20) not null,
+	`natureName` nvarchar(20) not null,
+	primary key (`natureCode`)	
+);
+
+#------------------------------
+
+###7)Employee_Size_Type
+drop table if exists `Employee_Size_Type`;
+create table `Employee_Size_Type`
+(
+	`typeCode` varchar(20) not null,
+	`typeName` nvarchar(20) not null,
+	primary key (`typeCode`)	
+);
+
+#------------------------------
+
+###8)Agent_Level_Code
+drop table if exists `Agent_Level_Code`;
+create table `Agent_Level_Code`
+(
+	`levelCode` varchar(20) not null,
+	`levelName` nvarchar(20) not null,
+	primary key (`levelCode`)	
+);
+
+#------------------------------
+
+###9)Merchant_Daily_Patrol_Record
+drop table if exists `Merchant_Daily_Patrol_Record`;
+create table `Merchant_Daily_Patrol_Record`
+(
+	`adprId` int(11) not null auto_increment,
+	`merchantId` int(11) not null, 						  	#FK
+	#`ruleCode` varchar(20) default null, 			  
+	`merchantEvaluateItemId` int(11) not null, 			#FK		
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,  	#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`adprId`),
+	key `idx_MerchantDailyPatrolRecord_merchantId` (`merchantId`),	
+	#key `idx_MerchantDailyPatrolRecord_ruleCode` (`ruleCode`),	
+	key `idx_MerchantDailyPatrolRecord_merchantEvaluateItemId` (`merchantEvaluateItemId`),
+	key `idx_MerchantDailyPatrolRecord_lastModifyUserCode` (`lastModifyUserCode`)		
+);
+
+###9)Merchant_Daily_Patrol_Record
+#[1]FK:merchantId
+#[2]FK:merchantEvaluateItemId --- 遗漏！！！
+#[3]FK:lastModifyUserCode
+
+
+##########################################
+#[[[Missing FK In All]]]
+#1)Merchant_Daily_Patrol_Record
+#[1]ruleCode
+#
+##########################################
+
+
+
+#################################################
+###Creae Table - 03_User_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`; 
+
+###1)Department
+drop table if exists `Department`;
+create table `Department`
+(
+	`deptId` int(11) not null auto_increment,
+	`deptName` nvarchar(20) default null,
+	`deptGradeNo` int(11) not null,
+	`upGradeDeptId` int(11) default null, 		 	#FK
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, 	#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`deptId`),
+	#unique (`deptName`),
+	key `idx_Department_upGradeDeptId` (`upGradeDeptId`),
+	key `idx_Department_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]upGradeDeptId
+#[2]lastModifyUserCode
+
+#------------------------------
+
+###2)User
+drop table if exists `User`;
+create table `User`
+(
+	`userCode` varchar(20) not null,
+	`password` varchar(20) not null default '000000',
+	`name` nvarchar(20) default null,
+	`sex` char(1) not null default 'F',
+	`age` int(11) default null,
+	`telephone` varchar(50) default null,
+	`deptId` int(11) default null,								#FK
+	`userStatusId` int(11) not null,							#FK
+	`remarks` text default null,
+	`lastModifyTime` date not null,
+	`lastLoginTime` date not null,
+	primary key(`userCode`),
+	key `idx_User_deptId` (`deptId`),
+	key `idx_User_userStatusId` (`userStatusId`)
+);
+
+#FK
+#[1]deptId
+#[2]userStatusId
+
+#------------------------------
+
+###3)Role
+drop table if exists `Role`;
+create table `Role`
+(
+	`roleId` int(11) not null auto_increment,
+	`roleName` nvarchar(20) default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,	#FK	 
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key(`roleId`),
+	#unique (`roleName`),
+	key `idx_Role_lastModifyUserCode` (`lastModifyUserCode`)			
+);
+
+#FK
+#[1]lastModifyUserCode
+
+#------------------------------
+
+###4)Authority
+drop table if exists `Authority`;
+create table `Authority`
+(
+	`authorityCode` varchar(20) not null,
+	`authorityName` nvarchar(20) not null,
+	`authorityModuleCode` varchar(20) not null, #FK
+	primary key(`authorityCode`),	
+	key `idx_Authority_authorityModuleCode` (`authorityModuleCode`)				
+);
+
+#FK
+#[1]authorityModuleCode
+
+#------------------------------
+
+###5)Authority_Module
+drop table if exists `Authority_Module`;
+create table `Authority_Module`
+(
+	`moduleCode` varchar(20) not null,
+	`moduleName` nvarchar(20) not null,
+	#`upGradeModuleCode` varchar(20) not null,	
+	primary key(`moduleCode`)
+	#unique (`moduleName`),
+	#key `idx_AuthorityModule_upGradeModuleCode` (`upGradeModuleCode`)	
+);
+
+#------------------------------
+
+###6)User_Status
+drop table if exists `User_Status`;
+create table `User_Status`
+(
+	`statusId` int(11) not null auto_increment,
+	`statusName` nvarchar(20) not null,
+	primary key(`statusId`)	
+);
+
+#------------------------------
+
+###7)Rl_User_Role
+drop table if exists `Rl_User_Role`;
+create table `Rl_User_Role`
+(
+	`userCode` varchar(20) not null,	
+	`roleId` int(11) not null,				
+	primary key(`userCode`,`roleId`)
+);
+
+#FK
+#[1]userCode
+#[2]roleId
+
+#------------------------------
+
+###8)Rl_Role_Authority
+drop table if exists `Rl_Role_Authority`;
+create table `Rl_Role_Authority`
+(
+	`roleId` int(11) not null, 					  
+	`authorityCode` varchar(20) not null,	
+	primary key(`roleId`,`authorityCode`)
+);
+
+#FK
+#[1]roleId
+#[2]authorityCode
+
+
+
+#################################################
+###Creae Table - 04_Assistant_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Assistant
+drop table if exists `Assistant`;
+create table `Assistant`
+(
+	`assistantId` int(11) not null auto_increment,
+	`assistantCertCode` varchar(50) default null,
+	`name` nvarchar(20) default null,	
+	`sex` char(1) not null default 'F',
+	`age` int(11) default null,
+	`telephone` varchar(50) default null,
+	`address` nvarchar(255) default null,
+	`merchantId` int(11) default null, 					#FK
+	`employBeginDate` date default null,
+	`employEndDate` date default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, 	#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`assistantId`),
+	#unique (`assistantCertCode`),
+	key `idx_Assistant_merchantId` (`merchantId`),	
+	key `idx_Assistant_lastModifyUserCode` (`lastModifyUserCode`)
+);
+#FK
+#[1]merchantId
+#[2]lastModifyUserCode
+
+#------------------------------
+
+###2)Assistant_Daily_Patrol_Record
+drop table if exists `Assistant_Daily_Patrol_Record`;
+create table `Assistant_Daily_Patrol_Record`
+(
+	`adprId` int(11) not null auto_increment,
+	`assistantId` int(11) not null, 						#FK
+	#`ruleCode` varchar(20) default null, 	
+	`merchantEvaluateItemId` int(11) not null, 	#FK		
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,  
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key(`adprId`),
+	key `idx_AssistantDailyPatrolRecord_assistantId` (`assistantId`),	
+	#key `idx_AssistantDailyPatrolRecord_ruleCode` (`ruleCode`),	
+	key `idx_AssistantDailyPatrolRecord_merchantEvaluateItemId` (`merchantEvaluateItemId`),	
+	key `idx_AssistantDailyPatrolRecord_lastModifyUserCode` (`lastModifyUserCode`)		
+);
+
+###2)Assistant_Daily_Patrol_Record
+#[1]FK:assistantId
+#[2]FK:ruleCode  --- 遗漏！！！
+#[3]FK:lastModifyUserCode
+
+
+##########################################
+#[[[Missing FK In All]]]
+#1)Assistant_Daily_Patrol_Record
+#[1]ruleCode
+#
+##########################################
+
+
+
+#################################################
+###Creae Table - 05_Sale_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Sale_Record
+drop table if exists `Sale_Record`;
+create table `Sale_Record`
+(
+	`voucherCode` varchar(50) not null,
+	`voucherTypeId` int(11) not null,								#FK
+	`merchantId` int(11) default null,							#FK
+	`boothId` int(11) default null,									#FK
+	`customerName` nvarchar(20) default null,   
+	`customerTel` varchar(50) default null,
+	`customerAddress` nvarchar(255) default null,
+	`totalCapital` double default null,
+	`discountAmount` double default null,
+	`realCapital` double default null,
+	`deposit` double default null,  
+	`payStatusOfDeposit` int(11) not null,					#FK
+	`payStatusOfTotalCapital` int(11) not null,			#FK	
+	`saleTime` date not null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,			#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key (`voucherCode`),
+	key `idx_SaleRecord_voucherTypeId` (`voucherTypeId`),
+	key `idx_SaleRecord_merchantId` (`merchantId`),
+	key `idx_SaleRecord_boothId` (`boothId`),
+	key `idx_SaleRecord_payStatusOfDeposit` (`payStatusOfDeposit`),			
+	key `idx_SaleRecord_payStatusOfTotalCapital` (`payStatusOfTotalCapital`),	
+	key `idx_SaleRecord_lastModifyUserCode` (`lastModifyUserCode`)	
+);
+#FK
+#[1]voucherTypeId
+#[2]merchantId
+#[3]boothId
+#[4]payStatusOfDeposit
+#[5]payStatusOfTotalCapital	
+#[6]lastModifyUserCode	
+
+#------------------------------
+
+###2)Pay_Status
+drop table if exists `Pay_Status`;
+create table `Pay_Status`
+(
+	statusId int(11) not null,
+	statusName nvarchar(20) not null,
+	primary key (`statusId`)
+);
+
+#------------------------------
+	
+###3)Voucher_Type
+drop table if exists `Voucher_Type`;
+create table `Voucher_Type`
+(
+	typeId int(11) not null,
+	typeName nvarchar(20) not null,
+	primary key (`typeId`)
+);
+	
+#------------------------------
+
+###4)Sale_Record_Detail
+drop table if exists `Sale_Record_Detail`;
+create table `Sale_Record_Detail`
+(
+	  `recordId` int(11) not null auto_increment,
+		`voucherCode` varchar(50) not null,							#FK
+		`goodsCode` varchar(20) default null,						#FK
+		`unitPrice` double default null,
+		`num` int(11) default null,
+		`lastModifyUserCode` varchar(20) not null,			#FK
+		`lastModifyTime` date not null,
+		`delFlag` char(1) not null default 'N',
+		primary key (`recordId`),
+		key `idx_SaleRecord_voucherCode` (`voucherCode`),		
+		key `idx_SaleRecord_goodsCode` (`goodsCode`),		
+		key `idx_SaleRecord_lastModifyUserCode` (`lastModifyUserCode`)	
+);
+#FK
+#[1]voucherCode
+#[2]goodsCode	--- 遗漏！！！
+#[3]lastModifyUserCode
+	
+
+##########################################
+#[[[Missing FK In All]]]
+#1)Sale_Record_Detail
+#[1]goodsCode
+#
+##########################################
+
+
+
+#################################################
+###Creae Table - 06_Message_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Message
+drop table if exists `Message`;
+create table `Message`
+(
+	`messageId` int(11) not null auto_increment,
+	`sendUserCode` varchar(20) not null, 						#FK
+	`receiveUserCode` varchar(20) default null, 		#FK
+	`messageText` text default null,
+	`messageStatusId` int(11) not null, 						#FK
+	`lastModifyTime` date not null,	
+	primary key(`messageId`),
+	key `idx_Message_sendUserCode` (`sendUserCode`),
+	key `idx_Message_receiveUserCode` (`receiveUserCode`),
+	key `idx_Message_messageStatusId` (`messageStatusId`)
+);
+
+#FK
+#[1]sendUserCode
+#[2]receiveUserCode
+#[3]messageStatusId
+
+#------------------------------
+
+###2)Message_Status
+drop table if exists `Message_Status`;
+create table `Message_Status`
+(
+	`statusId` int(11) not null auto_increment, 
+	`statusName` nvarchar(20) not null,
+	primary key(`statusId`)	
+); 
+
+
+
+#################################################
+###Creae Table - 07_Project_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Project
+drop table if exists `Project`;
+create table `Project`
+(
+	`projectId` int(11) not null auto_increment,
+	`projectName` nvarchar(20) default null, 
+	`originator` nvarchar(20) default null,
+	`projectBaseFee` double default null,	
+	`projectBeginDate` date default null,
+	`projectEndDate` date default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,		#FK
+	`lastModifyTime` date not null,
+	`projectStatusId` int(11) not null ,					#FK
+	primary key(`projectId`),	
+	key `idx_Project_lastModifyUserCode` (`lastModifyUserCode`),
+	key `idx_Project_projectStatusId` (`projectStatusId`)
+);
+
+#FK
+#[1]lastModifyUserCode
+#[2]projectStatusId
+
+#------------------------------
+
+###2)Project_Status
+drop table if exists `Project_Status`;
+create table `Project_Status`
+(
+	`statusId` int(11) not null auto_increment,
+	`statusName` nvarchar(20) default null,
+	primary key (`statusId`)
+);
+
+#------------------------------
+
+###3)Rl_Project_Merchant
+drop table if exists `Rl_Project_Merchant`;
+create table `Rl_Project_Merchant`
+(
+	`projectId` int(11) not null,
+	`merchantId` int(11) not null,
+	primary key (`projectId`, `merchantId`) 
+);
+
+#FK
+#[1]projectId
+#[2]merchantId
+
+
+
+#################################################
+###Creae Table - 08_System_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)System_Parameter
+drop table if exists `System_Parameter`;
+create table `System_Parameter`
+(
+	`paramId` int(11) not null auto_increment,
+	`paramName` nvarchar(20) default null, 
+	`paramValue` nvarchar(20) default null,
+	primary key(`paramId`)
+);
+
+
+
+#################################################
+###Creae Table - 09_Query_Module_Table
+#################################################
+
+
+
+#################################################
+###Creae Table - 10_AfterSale_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)After_Sale_Record
+drop table if exists `After_Sale_Record`;
+create table `After_Sale_Record`
+(
+	`asrId` int(11) not null auto_increment,
+	`oldAsrId` int(11) default null,							 
+	`asrTypeId` int(11) default null, 						#FK
+	`customerName` nvarchar(20) default null,
+	`customerSex` char(1) not null default 'F',
+	`customerTel` varchar(50) default null,
+	`asrProblemTypeId` int(11) default null,			#FK
+	`voucherCode` varchar(50) default null,				
+	`merchantName` nvarchar(20) default null,
+	`brandName` nvarchar(20) default null,
+	`goodsCategroyName` nvarchar(20) default null,	
+	`assistantName`	nvarchar(20) default null,
+	`asrDisposeBeginTime` date default null,
+	`asrDisposeEndTime`	date default null,
+	`asrProblemRemarks` text default null,
+	`asrIdeaRemarks` text default null,
+	`asrResultRemarks` text default null,
+	`lastModifyUserCode` varchar(20) not null,		#FK
+	`lastModifyTime` date not null,
+	`asrStatusId` int(11) not null,								#FK
+	primary key (`asrId`),
+	#key `idx_AfterSaleRecord_oldAsrId` (`oldAsrId`),
+	key `idx_AfterSaleRecord_asrTypeId` (`asrTypeId`),	
+	key `idx_AfterSaleRecord_asrProblemTypeId` (`asrProblemTypeId`),	
+	key `idx_AfterSaleRecord_lastModifyUserCode` (`lastModifyUserCode`),	
+	key `idx_AfterSaleRecord_asrStatusId` (`asrStatusId`)
+);
+#FK
+#[1]oldAsrId
+#[2]asrTypeId --- 去掉
+#[3]asrProblemTypeId
+#[4]lastModifyUserCode	
+#[5]asrStatusId	
+
+#------------------------------
+
+###2)After_Sale_Record_Problem_Type
+drop table if exists `After_Sale_Record_Problem_Type`;
+create table `After_Sale_Record_Problem_Type`
+(
+	`problemId` int(11) not null auto_increment,
+	`problemName` nvarchar(20) default null,
+	primary key (`problemId`)
+);
+
+#------------------------------
+
+###3)After_Sale_Record_Status
+drop table if exists `After_Sale_Record_Status`;
+create table `After_Sale_Record_Status`
+(
+	`statusId` int(11) not null auto_increment,
+	`statusName` nvarchar(20) default null,
+	primary key (`statusId`)
+);
+
+#------------------------------
+
+###4)After_Sale_Record_Type
+drop table if exists `After_Sale_Record_Type`;
+create table `After_Sale_Record_Type`
+(
+	`typeId` int(11) not null auto_increment,
+	`typeName` nvarchar(20) default null,
+	primary key (`typeId`)
+);
+
+#------------------------------
+
+###5)Rl_AfterSale_Evaluate
+drop table if exists `Rl_AfterSale_Evaluate`;
+create table `Rl_AfterSale_Evaluate`
+(
+	`asrId` int(11) not null auto_increment,#FK
+	#`ruleCode` varchar(20) not null,#FK
+	#primary key (`typeId`, `ruleCode`)
+	`merchantEvaluateItemId` int(11) not null, 	#FK		
+	primary key (`asrId`, `merchantEvaluateItemId`)
+);
+
+#FK
+#[1]asrId
+#[2]ruleCode --- 遗漏！！！
+
+#########################
+#[遗漏]
+#5)Rl_AfterSale_Evaluate
+#[1]ruleCode
+#
+#########################
+
+
+
+#################################################
+###Creae Table - 11_Goods_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Goods_Category
+drop table if exists `Goods_Category`;
+create table `Goods_Category`
+(
+	`gcCode` varchar(20) not null,
+	`gcName` nvarchar(20) default null,
+	`gcGradeNo` int(11) not null,
+	`upGradeGcCode` varchar(20) default null,  #FK
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, #FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`gcCode`),
+	key `idx_GoodsCategory_upGradeGcCode` (`upGradeGcCode`),
+	key `idx_GoodsCategory_lastModifyUserCode` (`lastModifyUserCode`)		
+);
+
+#FK
+#[1]upGradeGcCode
+#[2]lastModifyUserCode
+
+#------------------------------
+
+###1)Goods
+drop table if exists `Goods`;
+create table `Goods`
+(
+	`goodsId` int(11) not null auto_increment,
+	`goodsName` nvarchar(20) default null,
+	`goodsCategoryCode` varchar(20) default null,  #FK
+	`brandId` int(11) default null, #FK
+	`goodsPrice` double default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, #FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`goodsId`),
+	key `idx_Goods_goodsCategoryCode` (`goodsCategoryCode`),
+	key `idx_Goods_brandId` (`brandId`),
+	key `idx_Goods_lastModifyUserCode` (`lastModifyUserCode`)			
+);
+
+#FK
+#[1]goodsCategoryCode
+#[2]brandId
+#[2]lastModifyUserCode
+
+
+
+#################################################
+###Creae Table - 12_Evaluate_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`;
+
+###1)Merchant_Evaluate
+drop table if exists `Merchant_Evaluate`;
+create table `Merchant_Evaluate`
+(
+	`meItemId` int(11) not null auto_increment,
+	`meItemCode` varchar(20) default null,
+	`meItemName` nvarchar(20) default null,
+	`meItemTypeName` nvarchar(20) default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, #FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`meItemId`),
+	key `idx_GoodsCategory_lastModifyUserCode` (`lastModifyUserCode`)		
+);
+
+#FK
+#[1]lastModifyUserCode
+
+#------------------------------
+
+###1)Merchant_Evaluate_Detail_Weight
+drop table if exists `Merchant_Evaluate_Detail_Weight`;
+create table `Merchant_Evaluate_Detail_Weight`
+(
+	`meParentItemId` int(11) not null, #FK
+	`meSonItemId` int(11) not null,		 #FK 	
+	`meWeight` double default null,
+	primary key (`meParentItemId`, `meSonItemId`)	
+);
+
+#FK
+#[1]meParentItemId
+#[2]meSonItemId
+
+
+
+#################################################
+###Creae Table - 15_Brand_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`; 
+
+###1)Brand
+drop table if exists `Brand`;
+create table `Brand`
+(
+	`brandId` int(11) not null auto_increment,
+	`brandCode` varchar(50) default null,
+	#`goodsCategoryId` int(11) not null, 
+	`goodsCategoryCode` varchar(20) default null, 		#FK
+	`brandName` nvarchar(20) default null,
+	`brandSymbol` varchar(20) default null,
+	`businessLicense` varchar(50) default null,
+	`registeredCapital` double default null,
+	`taxRegistrationNo` varchar(50) default null,
+	`legalPersonNo` varchar(50) default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, 				#FK
+	`lastModifyTime` datetime not null,	
+	`delFlag` char(1) not null default 'N',	
+	primary key (`brandId`),
+	#unique (`brandCode`),
+	key `idx_Brand_goodsCategoryCode` (`goodsCategoryCode`),
+	key `idx_Brand_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]goodsCategoryCode
+#[2]lastModifyUserCode
+
+#------------------------------
+
+###2)Brand_Cert
+drop table if exists `Brand_Cert`;
+create table `Brand_Cert`
+(
+	`bcId` int(11) not null auto_increment,
+	`bcCode` varchar(50) default null,	
+	`bcTypeId` int(11) not null, 									#FK			
+	`brandId` int(11) not null, 									#FK
+	`bcBeginDate` date default null,
+	`bcEndDate` date default null,
+	`lastModifyUserCode` varchar(20) not null, 		#FK
+	`lastModifyTime` datetime not null,	
+	`delFlag` char(1) not null default 'N',	
+	primary key (`bcId`),
+	key `idx_BrandCert_bcTypeId` (`bcTypeId`),	
+	key `idx_BrandCert_brandId` (`brandId`),	
+	key `idx_BrandCert_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]bcTypeId
+#[2]brandId
+#[3]lastModifyUserCode
+
+#------------------------------
+
+###3)Brand_Cert_Type
+drop table if exists `Brand_Cert_Type`;
+create table `Brand_Cert_Type`
+(
+	`bcTypeId` int(11) not null auto_increment,
+	`bcTypeName` nvarchar(20) default null,
+	`lastModifyUserCode` varchar(20) not null, 	#FK
+	`lastModifyTime` datetime not null,		
+	`delFlag` char(1) not null default 'N',	
+	primary key (`bcTypeId`),
+	#unique (`bcTypeName`),
+	key `idx_BrandCertType_lastModifyUserCode` (`lastModifyUserCode`)		
+);
+
+#FK
+#[1]lastModifyUserCode
+
+
+
+#################################################
+###Creae Table - 16_ContractTemplate_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`; 
+
+###1)Contract_Template
+drop table if exists `Contract_Template`;
+create table `Contract_Template`
+(
+	`ctId` int(11) not null auto_increment,
+	`ctCode` varchar(20) default null,
+	`ctName` nvarchar(20) default null,
+	`storagePath` varchar(255) default null,
+	`remarks` text default null,
+	`lastModifyUserCode` varchar(20) not null, 
+	`lastModifyTime` datetime not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key (`ctId`),
+	#unique (`ctCode`),
+	#unique (`ctName`),	
+	key `idx_CT_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]lastModifyUserCode
+
+
+
+#################################################
+###Creae Table - 17_Contract_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`; 
+
+###1)Contract_Basic_Info
+drop table if exists `Contract_Basic_Info`;
+create table `Contract_Basic_Info`
+(
+	`contractCode` varchar(20) not null,
+	`merchantId` int(11) default null, 			   #FK
+	`contractTypeId` int(11) default null,	   #FK
+	`resourceId` int(11) default null,			   #FK
+	`projectId` int(11) default null,				   #FK
+	`period` int(11) default null,			
+	`signingDate` date default null,
+	`beginDate` date default null,
+	`endDate` date default null,
+	`totalAmount` double default null,
+	`discountAmount` double default null,
+	`realAmount` double default null,
+	`payPeriodTypeId` int(11) default null,    #FK
+	`periodNum` int(11) default null,
+	`remarks` text default null,
+	`registerUserCode` varchar(20) not null,   #FK
+	`registerTime` date not null,
+	`lastModifyUserCode` varchar(20) not null, #FK
+	`lastMofidyTime` date not null,
+	`contractStatusId` int(11) not null,			 #FK
+	primary key (`contractCode`),
+	key `idx_CBI_merchantId` (`merchantId`),
+	key `idx_CBI_contractTypeId` (`contractTypeId`),
+	key `idx_CBI_resourceId` (`resourceId`),
+	key `idx_CBI_projectId` (`projectId`),
+	key `idx_CBI_payPeriodTypeId` (`payPeriodTypeId`),
+	key `idx_CBI_registerUserCode` (`registerUserCode`),
+	key `idx_CBI_lastModifyUserCode` (`lastModifyUserCode`),
+	key `idx_CBI_contractStatusId` (`contractStatusId`)
+);
+
+#FK
+#[1]merchantId
+#[2]contractTypeId
+#[3]resourceId
+#[4]projectId
+#[5]payPeriodTypeId
+#[6]registerUserCode
+#[7]lastModifyUserCode
+#[8]contractStatusId
+
+#------------------------------
+
+###2)Contract_PayMode_Detail
+drop table if exists `Contract_PayMode_Detail`;
+create table `Contract_PayMode_Detail`
+(
+	`cpdId` int(11) not null auto_increment,
+	`contractCode` varchar(20) not null,				#FK
+	`periodNo` int(11) default null,
+	`periodEndDate` date default null,
+	`periodAmount` double default null,
+	`payModeTypeId` int(11) default null,				#FK
+	`lastModifyUserCode` varchar(20) not null,	#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`cpdId`),	
+	key `idx_CPD_contractCode` (`contractCode`),
+	key `idx_CPD_payModeTypeId` (`payModeTypeId`),
+	key `idx_CPD_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]contractCode
+#[2]payModeTypeId
+#[3]lastModifyUserCode
+
+#------------------------------
+
+###3)Contract_Charge_Detail
+drop table if exists `Contract_Charge_Detail`;
+create table `Contract_Charge_Detail`
+(
+	`ccdId` int(11) not null auto_increment,
+	`contractCode` varchar(20) not null,				#FK
+	`chargeItemId` int(11) default null,				#FK
+	`amount` double default null,
+	`discountAmount` double default null,
+	`realAmount` double default null,
+	`lastModifyUserCode` varchar(20) not null,	#FK	
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',
+	primary key (`ccdId`),	
+	key `idx_CCD_contractCode` (`contractCode`),
+	key `idx_CCD_chargeItemId` (`chargeItemId`),
+	key `idx_CCD_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]contractCode
+#[2]chargeItemId
+#[3]lastModifyUserCode
+
+#------------------------------
+
+###4)Contract_Apply
+drop table if exists `Contract_Apply`;
+create table `Contract_Apply`
+(
+	`caId` int(11) not null auto_increment,
+	`contractCode` varchar(20) default null,			#FK
+	`applyMode` varchar(20) default null,
+	`merchantId` int(11) default null,						#FK
+	`applyDate` date default null,
+	`applyFinishDate` date default null,
+	`applyExtendPeriod` int(11) default null,
+	`applyExtendBeginDate` date default null,
+	`applyExtendEndDate` date default null,
+	`applyReason` text default null,
+	`lastModifyUserCode` varchar(20) not null,		#FK
+	`lastModifyTime` date not null,
+	`applyStatusId` int(11) not null,							#FK
+	primary key (`caId`),	
+	key `idx_CA_contractCode` (`contractCode`),
+	key `idx_CA_merchantId` (`merchantId`),
+	key `idx_CA_lastModifyUserCode` (`lastModifyUserCode`),
+	key `idx_CA_applyStatusId` (`applyStatusId`)
+);
+
+#FK
+#[1]contractCode
+#[2]merchantId
+#[3]lastModifyUserCode
+#[4]applyStatusId
+
+#------------------------------
+
+###4)PayMode_Type
+drop table if exists `PayMode_Type`;
+create table `PayMode_Type`
+(
+	`typeId` int(11) not null auto_increment,
+	`typeName` nvarchar(20) not null,
+	primary key(`typeId`)
+);
+
+#------------------------------
+
+###5)Contract_Type
+drop table if exists `Contract_Type`;
+create table `Contract_Type`
+(
+	`typeId` int(11) not null auto_increment,
+	`typeName` nvarchar(20) not null,
+	primary key(`typeId`)
+);
+
+#------------------------------
+
+#6)Contract_Status
+drop table if exists `Contract_Status`;
+create table `Contract_Status`
+(
+	`statusId` int(11) not null auto_increment,
+	`statusName` nvarchar(20) not null,
+	primary key(`statusId`)
+);
+
+#------------------------------
+
+#7)Contract_PayPeriod_Type
+drop table if exists `Contract_PayPeriod_Type`;
+create table `Contract_PayPeriod_Type`
+(
+	`typeId` int(11) not null auto_increment,
+	`typeName` nvarchar(20) not null,
+	primary key(`typeId`)
+);
+
+
+
+#################################################
+###Creae Table - 18_Finance_Module_Table
+#################################################
+
+use `EbizMarketManager_0303`; 
+
+###1)Financial_Charge_Item
+drop table if exists `Financial_Charge_Item`;
+create table `Financial_Charge_Item`
+(
+	`chargeItemId` int(11) not null auto_increment,
+	`chargeItemCode` varchar(20) default null,	
+	`chargeItemName` nvarchar(20) default null,
+	`isContractItemFlag` char(1) not null,
+	`isResourceItemFlag` char(1) not null,
+	`payPeriodTypeId` int(11) default null,			#FK
+	`remarks` text default null,
+	`enterUserCode` varchar(20) not null,				#FK
+	`enterTime` date not null,
+	`lastModifyUserCode` varchar(20) not null,	#FK
+	`lastModifyTime` date not null,
+	`delFlag` char(1) not null default 'N',	
+	primary key (`chargeItemId`),
+	key `idx_FCI_payPeriodTypeId` (`payPeriodTypeId`),
+	key `idx_FCI_enterUserCode` (`enterUserCode`),
+	key `idx_FCI_lastModifyUserCode` (`lastModifyUserCode`)
+);
+
+#FK
+#[1]payPeriodTypeId
+#[2]enterUserCode
+#[3]lastModifyUserCode
+
+#------------------------------
+
+###2)Financial_Trade_Record
+drop table if exists `Financial_Trade_Record`;
+create table `Financial_Trade_Record`
+(
+	`tradeRecordId` int(11) not null auto_increment,
+	`voucherCode` varchar(50) not null,
+	`oldVoucherCode` varchar(50) default null, 	
+	`contractCode` varchar(20) default null,	#FK
+	`merchantId` int(11) default null,				#FK
+	`resourceId` int(11) default null,				#FK
+	`chargeItemId` int(11) default null,			#FK
+	`amount` double default null,
+	`tradeBeginDate` date default null,
+	`tradeEndDate` date default null,
+	`lastModifyUserCode` varchar(20) not null,#FK
+	`lastModifyTime` date not null,
+	`tradeStatusId` int(11) not null,					#FK	
+	primary key (`tradeRecordId`),
+	key `idx_FTR_contractCode` (`contractCode`),
+	key `idx_FTR_merchantId` (`merchantId`),
+	key `idx_FTR_resourceId` (`resourceId`),
+	key `idx_FTR_chargeItemId` (`chargeItemId`),
+	key `idx_FTR_lastModifyUserCode` (`lastModifyUserCode`),
+	key `idx_FTR_tradeStatusId` (`tradeStatusId`)
+);
+
+#FK
+#[1]contractCode
+#[2]merchantId
+#[3]resourceId
+#[4]chargeItemId
+#[5]lastModifyUserCode
+#[6]tradeStatusId
+
+#------------------------------
+
+#6)Financial_Trade_Status
+drop table if exists `Financial_Trade_Status`;
+create table `Financial_Trade_Status`
+(
+	`statusId` int(11) not null auto_increment,
+	`statusName` nvarchar(20) not null,
+	primary key(`statusId`)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
